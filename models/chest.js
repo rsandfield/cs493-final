@@ -1,3 +1,5 @@
-module.exports = class ChestModel {
+const Model = require("./model");
+
+module.exports = class ChestModel extends Model {
     
 }

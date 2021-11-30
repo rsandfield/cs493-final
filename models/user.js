@@ -1,3 +1,5 @@
-module.exports = class UserModel {
+const Model = require("./model");
+
+module.exports = class UserModel extends Model {
     
 }

@@ -1,3 +1,5 @@
-module.exports = class TreasureModel {
+const Model = require("./model");
+
+module.exports = class TreasureModel extends Model {
     
 }
