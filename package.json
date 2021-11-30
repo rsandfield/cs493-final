@@ -7,5 +7,10 @@
     "test": "npm test"
   },
   "author": "Robert Sandfield",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@google-cloud/datastore": "^6.6.2",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1"
+  }
 }
