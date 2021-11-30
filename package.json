@@ -1,0 +1,11 @@
+{
+  "name": "cs493-final",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "author": "Robert Sandfield",
+  "license": "ISC"
+}
