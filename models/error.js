@@ -25,6 +25,10 @@ module.exports = {
         let error = new this.PageNotFoundError();
         error.toResponse(res);
     },
+    overrideMissingError(error, typedMissingError) {
+        if(error instanceof this.ObjectNotFoundError) return typedMissingError;
+        return error` W21`;
+    },
     MissingAttributeError: class MissingAttributeError extends HttpError {
         constructor() {
             super(401, "MissingAttributeError", "Input is missing a required attribute")
