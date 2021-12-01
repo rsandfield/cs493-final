@@ -22,16 +22,20 @@ module.exports = {
         return this.datastore.get(key);
     },
     get_items_paginated: function(kind, pageCursor) {
-        let q = this.datastore.createQuery(kind)
+        const q = this.datastore.createQuery(kind)
             .limit(config.limit);
         if(pageCursor) {
             q = q.start(pageCursor);
         }
         return this.datastore.runQuery(q)
     },
-    get_items_query: function(kind, property, comparitor, value) {
+    get_items_query_paginated: function(kind, filter, page_cursor) {
         const q = this.datastore.createQuery(kind)
-            .filter(property, comparitor, value);
+            .limit(config.limit)
+            .filter(filter.property, filter.comparitor, filter.value);
+        if(page_cursor) {
+            q = q.start(page_cursor);
+        }
         return this.datastore.runQuery(q);
     },
     save_item: function(item) {

@@ -9,7 +9,7 @@ const chestModel = new chestModel();
  * Get paginated chests, private to authorized owner or all public if no token
  */
 router.get('/',
-    (req, res, next) => chestModel.get_chests(auth.get_user_id(req))
+    (req, res, next) => chestModel.get_chests(auth.get_user_id(req), req.params.page_cursor)
         .then(chests => res.status(200).json(chests))
         .catch(next)
 );
@@ -27,7 +27,7 @@ router.post('/',
  * Get chest
  */
 router.get('/:chest_id',
-    (req, res, next) => chestModel.get_chest(auth.get_user_id(req), req.params.chest_id)
+    (req, res, next) => chestModel.get_chest_with_self(auth.get_user_id(req), req.params.chest_id)
         .then(chest => res.status(200).json(chest))
         .catch(next)
 );
