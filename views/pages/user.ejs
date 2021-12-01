@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<head>
+    <style>
+        table, td {
+            border-collapse: collapse;
+            border: 1px solid black;
+            padding: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>USER</h1>
+        <p>This page displays user info and the token returned in the OAuth handshake</p>
+        <table>
+            <tr>
+                <td>User Name</td>
+                <td><%= username %></td>
+            </tr>
+            <tr>
+                <td>User ID</td>
+                <td><%= user_id %></td>
+            </tr>
+            <tr>
+                <td>Token</td>
+                <td><%= token %></td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
