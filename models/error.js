@@ -64,4 +64,13 @@ module.exports = {
             super("Page")
         }
     },
+    TreasureNotInChestError: class TreasureNotInChestError extends HttpError {
+        constructor() {
+            super(
+                401,
+                "TreasureNotInChestError",
+                "No treasure with the given treasure ID is in a chest with the given chest ID"
+            )
+        }
+    }
 }
