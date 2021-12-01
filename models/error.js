@@ -21,6 +21,11 @@ class NotFoundError extends HttpError {
 }
 
 module.exports = {
+    handleErrors: function(err, req, res, next) {
+        let status = err.status || 500;
+        res.status(status).json({ "Error": err.message });
+        next();
+    },
     pageNotFound: function (req, res, next) {
         let error = new this.PageNotFoundError();
         error.toResponse(res);

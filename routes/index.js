@@ -5,4 +5,5 @@ module.exports = function(app) {
     app.use('/treasures', './treasures');
     app.use('/users', './users');
     app.use(error.pageNotFound)
+    app.use(error.handleErrors)
 }
