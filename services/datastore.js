@@ -34,6 +34,9 @@ module.exports = {
             .filter(property, comparitor, value);
         return this.datastore.runQuery(q);
     },
+    save_item: function(item) {
+        return this.datastore.save(item);
+    },
     save_new_item: function(kind, data) {
         let key = this.datastore.key(kind);
         return this.datastore.save({ "key": key, "data": data })

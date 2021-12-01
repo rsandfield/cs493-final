@@ -34,5 +34,9 @@ module.exports = {
                 next();
             })
             .catch(next);
+    },
+    get_user_id(req) {
+        if(req.user && req.user.sub) return req.user.sub;
+        return null;
     }
 }
