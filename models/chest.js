@@ -98,7 +98,7 @@ module.exports = class ChestModel extends Model {
     }
 
     /**
-     * Replaces the given attributes within the given chest with the new data\
+     * Replaces the given attributes within the given chest with the new data
      * if the chest's owner matches the one provided
      * @param {String} owner 
      * @param {Number} chest_id 
@@ -151,10 +151,12 @@ module.exports = class ChestModel extends Model {
                     if(index < 0) return new error.TreasureNotInChestError();
 
                     chest.treasures = chest.treasures.splice(index, 1)
-                    treasure.chest = null;
+
+                    treasureModel.modify_treasure(
+                        owner, treasure.id, { chest: null }
+                    );
                     
-                    return ds.save_item(chest)
-                        .then(_ => ds.save_item(treasure))
+                    return ds.save_item(chest);
                 })
             )
     }

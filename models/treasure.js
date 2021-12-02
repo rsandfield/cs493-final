@@ -86,4 +86,50 @@ module.exports = class TreasureModel extends Model {
             .then(treasure => ds.add_self(this.kind, treasure))
                 .add_treasure_chest_self(owner, treasure)
     }
+
+    /**
+     * Checks that all required attributes are provided and then replaces the
+     * given treasure with the new data if the treasure's owner matches the one
+     * provided
+     * @param {String} owner 
+     * @param {Number} treasure_id 
+     * @param {Chest} treasure 
+     * @returns 
+     */
+    async replace_treasure(owner, treasure_id, treasure) {
+        treasure.owner = owner;
+        return check_attributes(treasure)
+            .then(_ => this.modify_treasure(owner, treasure_id, treasure))
+    }
+
+    /**
+     * Replaces the given attributes within the given treasure with the new data
+     * if the treasure's owner matches the one provided
+     * @param {String} owner 
+     * @param {Number} treasure_id 
+     * @param {Chest} treasure 
+     * @returns 
+     */
+    async modify_treasure(owner, treasure_id, treasure) {
+        treasure.owner = owner;
+        return this.get_treasure(owner, treasure_id)
+            .then(oldTreasure => {
+                Object.keys(treasure).forEach(key =>
+                    oldTreasure[key] = treasure[key]);
+                super.update_object(treasure)
+            })
+    }
+
+    async delete_treasure(owner, treasure_id) {
+        return this.get_treasure(owner, treasure_id)
+            .then(treasure => {
+                if(treasure.chest) {
+                    ds.get_item('chest', treasure.chest)
+                        .then(chest => ds.save_item(chest.treasures
+                            .filter(held => held != treasure_id)))
+                }
+
+                return super.delete_object(treasure_id)
+            })
+    }
 }
