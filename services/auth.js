@@ -1,11 +1,10 @@
-require('dotenv').config();
-
 const {google} = require('googleapis');
+const secret = require('../secrets/oauth_secret.json').web;
 
 const oauth2Client = new google.auth.OAuth2(
-    process.env.client_id,
-    process.env.client_secret,
-    process.env.redirect_uri
+    secret.client_id,
+    secret.client_secret,
+    secret.redirect_uris[0]
 );
 
 const scopes = [ 'profile' ];
@@ -27,7 +26,7 @@ module.exports = {
         oauth2Client
             .verifyIdToken({
                 idToken: token,
-                audience: process.env.client_id
+                audience: secret.client_id
             })
             .then(ticket => {
                 req.user = ticket.getPayload();

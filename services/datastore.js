@@ -1,8 +1,11 @@
 const { Datastore } = require('@google-cloud/datastore');
-const config = require('../config');
+const secret = require('../secrets/api_secret.json');
 
 module.exports = {
-    datastore: new Datastore(config.datastore),
+    datastore: new Datastore({
+        "projectId": secret.project_id,
+        "credentials": secret
+    }),
     from_datastore: function(item) {
         item.id = item[Datastore.KEY].id;
         return item;
