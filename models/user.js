@@ -2,6 +2,13 @@ const ds = require('../services/datastore');
 const error = require("./error");
 const Model = require("./model");
 
+async save_user(user_id) {
+    ds.datastore.save({
+        "key": ds.datastore.key([this.kind, parseInt(user_id, 10)]),
+        "data": {} }
+    )
+}
+
 module.exports = class UserModel extends Model {
     constructor() {
         super("user");
@@ -16,15 +23,8 @@ module.exports = class UserModel extends Model {
         return super.get_object(user_id)
             .then(user => console.log(user))
             .catch(err => {
-                console.log(err)
                 if(err.status == 404) {
-                    return ds.datastore.save({
-                        "key": ds.datastore.key([
-                            this.kind,
-                            parseInt(user_id, 10)
-                        ]),
-                        "data": {} }
-                    )
+                    return save_user(user_id)
                 }
                 return err;
             })
