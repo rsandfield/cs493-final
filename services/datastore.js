@@ -42,7 +42,7 @@ module.exports = {
             .limit(process.env.limit)
             .filter(filter.property, filter.comparitor, filter.value);
         if(page_cursor) {
-            q = q.start(page_cursor);
+            q = q.start(page_cursor.replace(' ', '+'));
         }
         return this.datastore.runQuery(q);
     },
