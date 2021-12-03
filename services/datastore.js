@@ -1,5 +1,6 @@
 const { Datastore } = require('@google-cloud/datastore');
 const secret = require('../secrets/api_secret.json');
+require('dotenv').config()
 
 module.exports = {
     datastore: new Datastore({
@@ -24,9 +25,16 @@ module.exports = {
         const key = this.datastore.key([kind, parseInt(id, 10)]);
         return this.datastore.get(key);
     },
+    get_items: function(kind) {
+        const q = this.datastore.createQuery(kind)
+        if(pageCursor) {
+            q = q.start(pageCursor);
+        }
+        return this.datastore.runQuery(q)
+    },
     get_items_paginated: function(kind, pageCursor) {
         const q = this.datastore.createQuery(kind)
-            .limit(config.limit);
+            .limit(process.env.limit);
         if(pageCursor) {
             q = q.start(pageCursor);
         }

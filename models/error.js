@@ -22,6 +22,7 @@ class NotFoundError extends HttpError {
 
 module.exports = {
     handleErrors: function(err, req, res, next) {
+        console.error(err)
         let status = err.status || 500;
         res.status(status).json({ "Error": err.message });
         next();
@@ -32,7 +33,7 @@ module.exports = {
     },
     overrideMissingError(error, typedMissingError) {
         if(error instanceof this.ObjectNotFoundError) return typedMissingError;
-        return error` W21`;
+        return error;
     },
     MissingAttributeError: class MissingAttributeError extends HttpError {
         constructor() {
