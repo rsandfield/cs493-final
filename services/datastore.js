@@ -29,11 +29,11 @@ module.exports = {
         let q = this.datastore.createQuery(kind)
         return this.datastore.runQuery(q)
     },
-    get_items_paginated: function(kind, pageCursor) {
+    get_items_paginated: function(kind, page_cursor) {
         let q = this.datastore.createQuery(kind)
             .limit(process.env.limit);
-        if(pageCursor) {
-            q = q.start(pageCursor);
+        if(page_cursor) {
+            q = q.start(page_cursor.replace(' ', '+'));
         }
         return this.datastore.runQuery(q)
     },
