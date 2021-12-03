@@ -61,7 +61,8 @@ module.exports = class Model {
     }
 
     async update_object(content) {
-        ds.save_item(content)
+        delete content.id;
+        return ds.save_item(content);
     }
 
     async delete_object(id) {

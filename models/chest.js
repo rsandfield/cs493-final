@@ -75,6 +75,12 @@ module.exports = class ChestModel extends Model {
                 if(chest.owner == owner) return chest;
                 return Promise.reject(new error.ChestNotFoundError());
             })
+            .catch(err => {
+                if(err.status == 404) {
+                    return Promise.reject(new error.ChestNotFoundError());
+                }
+                return Promise.reject(err);
+            })
     }
 
     /**
@@ -104,7 +110,7 @@ module.exports = class ChestModel extends Model {
     async replace_chest(owner, chest_id, chest) {
         chest.owner = owner;
         return check_attributes(chest)
-            .then(_ => this.modify_chest(owner, chest_id, chest))
+            .then(_ => this.update_chest(owner, chest_id, chest))
     }
 
     /**
@@ -115,12 +121,12 @@ module.exports = class ChestModel extends Model {
      * @param {Chest} chest 
      * @returns 
      */
-    async modify_chest(owner, chest_id, chest) {
+    async update_chest(owner, chest_id, chest) {
         chest.owner = owner;
         return this.get_chest(owner, chest_id)
             .then(oldChest => {
                 Object.keys(chest).forEach(key => oldChest[key] = chest[key]);
-                super.update_object(chest)
+                super.update_object(oldChest)
             })
     }
 
