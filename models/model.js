@@ -16,7 +16,7 @@ module.exports = class Model {
     async get_object(id) {
         return ds.get_item(this.kind, id)
             .then(object => {
-                if(object[0]) return object.map(ds.from_datastore)
+                if(object[0]) return ds.from_datastore(object[0])
                 return Promise.reject(new error.ObjectNotFoundError())
             })
     }
@@ -65,10 +65,7 @@ module.exports = class Model {
 
     async delete_object(id) {
         return this.get_object(id)
-            .then(ds.delete_item)
-            .catch(err => {
-                console.log(err);
-                return Promise.reject(new error.ObjectNotFoundError())
-            })
+            .then(object => ds.delete_item(object))
+            .catch(_ => Promise.reject(new error.ObjectNotFoundError()))
     }
 }

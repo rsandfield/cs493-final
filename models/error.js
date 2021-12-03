@@ -35,9 +35,22 @@ module.exports = {
         if(error instanceof this.ObjectNotFoundError) return typedMissingError;
         return error;
     },
+    InvalidTokenError: class InvalidTokenError extends HttpError {
+        constructor() {
+            super(
+                403,
+                "InvalidTokenError",
+                "A valid token is required to complete that action"
+            )
+        }
+    },
     MissingAttributeError: class MissingAttributeError extends HttpError {
         constructor() {
-            super(401, "MissingAttributeError", "Input is missing a required attribute")
+            super(
+                401,
+                "MissingAttributeError",
+                "Input is missing a required attribute"
+            )
         }
     },
     ObjectNotFoundError: class ObjectNotFoundError extends NotFoundError {

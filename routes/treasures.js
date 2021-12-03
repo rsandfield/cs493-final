@@ -21,6 +21,7 @@ const treasureModel = require('../models/treasure')
 */
 router.post('/',
     auth.get_user,
+    auth.check_for_user,
     (req, res, next) => treasureModel.post_treasure(
         auth.get_user_id(req), req.body
     )
@@ -33,6 +34,7 @@ router.post('/',
 */
 router.get('/:treasure_id',
     auth.get_user,
+    auth.check_for_user,
     (req, res, next) => treasureModel.get_treasure_with_self(auth.get_user_id(req), req.params.treasure_id)
         .then(treasure => res.status(200).json(treasure))
         .catch(next)
@@ -43,6 +45,7 @@ router.get('/:treasure_id',
 */
 router.put('/:treasure_id',
     auth.get_user,
+    auth.check_for_user,
     (req, res, next) => treasureModel.replace_treasure(auth.get_user_id(req), req.params.treasure_id, req.body)
         .then(_ => res.status(204).end())
         .catch(next)
@@ -53,6 +56,7 @@ router.put('/:treasure_id',
 */
 router.patch('/:treasure_id',
     auth.get_user,
+    auth.check_for_user,
     (req, res, next) => treasureModel.update_treasure(auth.get_user_id(req), req.params.treasure_id, req.body)
         .then(_ => res.status(204).end())
         .catch(next)
@@ -63,6 +67,7 @@ router.patch('/:treasure_id',
 */
 router.delete('/:treasure_id',    
     auth.get_user,
+    auth.check_for_user,
     (req, res, next) => treasureModel.delete_treasure(auth.get_user_id(req), req.params.treasure_id)
         .then(_ => res.status(204).end())
         .catch(next)

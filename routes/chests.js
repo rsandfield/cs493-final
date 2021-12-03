@@ -22,6 +22,7 @@ router.get('/',
  */
 router.post('/',
     auth.get_user,
+    auth.check_for_user,
     (req, res, next) => chestModel.post_chest(auth.get_user_id(req), req.body)
         .then(chest => res.status(201).json(chest))
         .catch(next)
@@ -32,6 +33,7 @@ router.post('/',
  */
 router.get('/:chest_id',
     auth.get_user,
+    auth.check_for_user,
     (req, res, next) => chestModel.get_chest_with_self(
         auth.get_user_id(req), req.params.chest_id
     )
@@ -44,6 +46,7 @@ router.get('/:chest_id',
  */
 router.put('/:chest_id',
     auth.get_user,
+    auth.check_for_user,
     (req, res, next) => chestModel.replace_chest(
         auth.get_user_id(req), req.params.chest_id, req.body
     )
@@ -56,6 +59,7 @@ router.put('/:chest_id',
  */
 router.patch('/:chest_id',
     auth.get_user,
+    auth.check_for_user,
     (req, res, next) => chestModel.update_chest(
         auth.get_user_id(req), req.params.chest_id, req.body
     )
@@ -68,6 +72,7 @@ router.patch('/:chest_id',
  */
 router.put('/:chest_id/treasures/:treasure_id',
     auth.get_user,
+    auth.check_for_user,
     (req, res, next) => chestModel.add_treasure(
         auth.get_user_id(req), req.params.chest_id, req.params.treasure_id
     )
@@ -80,6 +85,7 @@ router.put('/:chest_id/treasures/:treasure_id',
  */
 router.delete('/:chest_id/treasures/:treasure_id',
     auth.get_user,
+    auth.check_for_user,
     (req, res, next) => chestModel.remove_treasure(
         auth.get_user_id(req), req.params.chest_id, req.params.treasure_id
     )
@@ -92,6 +98,7 @@ router.delete('/:chest_id/treasures/:treasure_id',
  */
 router.delete('/:chest_id',
     auth.get_user,
+    auth.check_for_user,
     (req, res, next) => chestModel.delete_chest(
         auth.get_user_id(req), req.params.chest_id
     )

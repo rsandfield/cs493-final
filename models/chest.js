@@ -5,6 +5,9 @@ const TreasureModel = require('./treasure');
 const treasureModel = new TreasureModel();
 
 async function check_attributes(chest) {
+    if(!chest.type || !chest.material || !chest.volume) {
+        return Promise.reject(new error.MissingAttributeError())
+    }
     return Promise.resolve();
 }
 
@@ -63,7 +66,7 @@ module.exports = class ChestModel extends Model {
         return super.get_object(chest_id)
             .then(chest => {
                 if(chest.owner == owner) return chest;
-                return new error.ChestNotFoundError();
+                return Promise.reject(new error.ChestNotFoundError());
             })
     }
 
@@ -77,8 +80,8 @@ module.exports = class ChestModel extends Model {
      */
     async get_chest_with_self(owner, chest_id) {
         return this.get_chest(owner, chest_id)
-            .then(chest => ds.add_self(this.kind, chest)
-                .add_chest_treasure_details(owner, chest)
+            .then(chest => this.add_chest_treasure_details(
+                owner, ds.add_self(this.kind, chest))
             )
     }
 

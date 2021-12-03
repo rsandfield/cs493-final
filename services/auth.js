@@ -1,5 +1,6 @@
 const {google} = require('googleapis');
 const secret = require('../secrets/oauth_secret.json').web;
+const error = require('../models/error')
 
 const oauth2Client = new google.auth.OAuth2(
     secret.client_id,
@@ -33,6 +34,10 @@ module.exports = {
                 next();
             })
             .catch(next);
+    },
+    check_for_user(req, res, next) {
+        if(!req.user) next(new error.InvalidTokenError());
+        next();
     },
     get_user_id(req) {
         if(req.user && req.user.sub) return req.user.sub;

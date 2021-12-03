@@ -22,7 +22,7 @@ module.exports = {
         return item[Datastore.KEY];
     },
     get_item: function(kind, id) {
-        const key = this.datastore.key([kind, parseInt(id, 10)]);
+        const key = id.id ? id : this.datastore.key([kind, parseInt(id, 10)]);
         return this.datastore.get(key);
     },
     get_items: function(kind) {
