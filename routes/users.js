@@ -27,7 +27,7 @@ router.get('/token',
 
 router.get('/:user_id',
     (req, res) => {
-        userModel.register_user(req.params.user_id);
+        userModel.register_user(req.params.user_id, req.query.username);
 
         res.render('pages/user', {
             username: req.query.username,

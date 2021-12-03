@@ -12,7 +12,7 @@ module.exports = {
         return item;
     },
     self_link: function(kind, id) {
-        return config.host + kind + "s/" + id;
+        return process.env.host + '/' + kind + "s/" + id;
     },
     add_self: function(kind, item) {
         item['self'] = this.self_link(kind, item.id);
@@ -27,9 +27,6 @@ module.exports = {
     },
     get_items: function(kind) {
         const q = this.datastore.createQuery(kind)
-        if(pageCursor) {
-            q = q.start(pageCursor);
-        }
         return this.datastore.runQuery(q)
     },
     get_items_paginated: function(kind, pageCursor) {

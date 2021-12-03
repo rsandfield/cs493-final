@@ -1,1 +1,4 @@
 runtime: nodejs14
+env_variables:
+  host: https://sandlero-cs493-final.uc.r.appspot.com
+  limit: 5
