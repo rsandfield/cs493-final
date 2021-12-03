@@ -2,6 +2,8 @@ const express = require('express');
 const app = express();
 app.enable('trust proxy');
 
+app.set('view engine', 'ejs');
+
 const bodyParser = require('body-parser');
 const routes = require('./routes');
 
