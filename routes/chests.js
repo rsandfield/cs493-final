@@ -11,7 +11,7 @@ const chestModel = new ChestModel();
 router.get('/',
     auth.get_user,
     (req, res, next) => chestModel.get_chests(
-        auth.get_user_id(req), req.params.page_cursor
+        auth.get_user_id(req), req.query.page_cursor
     )
         .then(chests => res.status(200).json(chests))
         .catch(next)

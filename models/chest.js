@@ -24,7 +24,7 @@ module.exports = class ChestModel extends Model {
      */
     async add_chest_treasure_details(owner, chest) {
         chest.treasures = chest.treasures.map(treasure_id =>
-                treasureModel.get_treasure_with_self(owner, treasure_id))
+            treasureModel.get_treasure_with_self(owner, treasure_id))
         return chest;
     }
 
@@ -36,9 +36,16 @@ module.exports = class ChestModel extends Model {
      * @returns 
      */
     async get_chests(owner, page_cursor) {
-        return super.get_objects(owner, page_cursor)
-            .then(chests => chests.map(chest =>
-                this.add_chest_treasure_details(owner, chest)))
+        return super.get_objects_by_owner(owner, page_cursor)
+            .then(response => {
+                return Promise.all(response["objects"].map(chest =>
+                    this.add_chest_treasure_details(owner, chest))
+                )
+                    .then(chests => ({
+                        "chests": chests,
+                        "next": response["next"]
+                    }))
+            })
     }
 
     /**

@@ -48,11 +48,12 @@ module.exports = class Model {
             "value": owner
         }
 
-        ds.get_items_query_paginated(this.kind, filter, page_cursor)
-            .then(objects => {
+        return ds.get_items_query_paginated(this.kind, filter, page_cursor)
+            .then(results => {
                 return {
-                    objects: objects[0].map(object => ds.add_self(this.kind, object)),
-                    next: objects[1]['moreResults'] ==
+                    "objects": results[0].map(object =>
+                        ds.add_self(this.kind, ds.from_datastore(object))),
+                    "next": results[1]['moreResults'] ==
                         'MORE_RESULTS_AFTER_LIMIT' ?
                         results[1]['endCursor'] : null
                 }

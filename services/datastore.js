@@ -22,15 +22,15 @@ module.exports = {
         return item[Datastore.KEY];
     },
     get_item: function(kind, id) {
-        const key = id.id ? id : this.datastore.key([kind, parseInt(id, 10)]);
+        let key = id.id ? id : this.datastore.key([kind, parseInt(id, 10)]);
         return this.datastore.get(key);
     },
     get_items: function(kind) {
-        const q = this.datastore.createQuery(kind)
+        let q = this.datastore.createQuery(kind)
         return this.datastore.runQuery(q)
     },
     get_items_paginated: function(kind, pageCursor) {
-        const q = this.datastore.createQuery(kind)
+        let q = this.datastore.createQuery(kind)
             .limit(process.env.limit);
         if(pageCursor) {
             q = q.start(pageCursor);
@@ -38,8 +38,8 @@ module.exports = {
         return this.datastore.runQuery(q)
     },
     get_items_query_paginated: function(kind, filter, page_cursor) {
-        const q = this.datastore.createQuery(kind)
-            .limit(config.limit)
+        let q = this.datastore.createQuery(kind)
+            .limit(process.env.limit)
             .filter(filter.property, filter.comparitor, filter.value);
         if(page_cursor) {
             q = q.start(page_cursor);
