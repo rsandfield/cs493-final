@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../services/auth');
 const ChestModel = require('../models/chest');
-const chestModel = new chestModel();
+const chestModel = new ChestModel();
 
 /**
  * Get paginated chests, private to authorized owner or all public if no token
@@ -83,4 +83,4 @@ router.delete('/:chest_id',
     .catch(next)
 );
 
-return router;
+module.exports = router;

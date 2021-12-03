@@ -28,4 +28,4 @@ router.get('/token',
     (req, res) => res.redirect(`/users/${req.user.sub}`)
 );
 
-return router;
+module.exports = router;

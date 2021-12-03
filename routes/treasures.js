@@ -61,4 +61,4 @@ router.delete('/:treasure_id',
         .catch(next)
 );
 
-return router;
+module.exports = router;
