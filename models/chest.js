@@ -37,15 +37,14 @@ module.exports = class ChestModel extends Model {
      */
     async get_chests(owner, page_cursor) {
         return super.get_objects_by_owner(owner, page_cursor)
-            .then(response => {
-                return Promise.all(response["objects"].map(chest =>
-                    this.add_chest_treasure_details(owner, chest))
-                )
-                    .then(chests => ({
-                        "chests": chests,
-                        "next": response["next"]
-                    }))
-            })
+            .then(response => Promise.all(response["objects"]
+                .map(chest => this.add_chest_treasure_details(owner, chest))
+            )
+                .then(chests => ({
+                    "chests": chests,
+                    "next": response["next"]
+                }))
+            )
     }
 
     /**
@@ -168,7 +167,7 @@ module.exports = class ChestModel extends Model {
 
                     chest.treasures = chest.treasures.splice(index, 1)
 
-                    treasureModel.modify_treasure(
+                    treasureModel.update_treasure(
                         owner, treasure.id, { chest: null }
                     );
                     
@@ -189,7 +188,7 @@ module.exports = class ChestModel extends Model {
         return this.get_chest(owner, chest_id)
             .then(chest => {
                 chest.treasures.forEach(treasure_id =>
-                    treasureModel.modify_treasure(
+                    treasureModel.update_treasure(
                         owner, treasure_id, { chest: null }
                     )
                 );

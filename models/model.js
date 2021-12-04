@@ -47,7 +47,7 @@ module.exports = class Model {
             "comparitor": "=",
             "value": owner
         }
-
+        
         return ds.get_items_query_paginated(this.kind, filter, page_cursor)
             .then(results => {
                 return {

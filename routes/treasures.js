@@ -2,7 +2,8 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../services/auth');
-const treasureModel = require('../models/treasure')
+const TreasureModel = require('../models/treasure')
+const treasureModel = new TreasureModel();
 
 /**
  * Get paginated treasures, private to authorized owner or all public if no token
@@ -10,7 +11,7 @@ const treasureModel = require('../models/treasure')
  router.get('/',
     auth.get_user,
     (req, res, next) => treasureModel.get_treasures(
-        auth.get_user_id(req), req.params.page_cursor
+        auth.get_user_id(req), req.query.page_cursor
     )
         .then(treasures => res.status(200).json(treasures))
         .catch(next)

@@ -3,6 +3,9 @@ const error = require('./error');
 const Model = require("./model");
 
 async function check_attributes(treasure) {
+    if(!treasure.type || !treasure.value || !treasure.volume) {
+        return Promise.reject(new error.MissingAttributeError())
+    }
     return Promise.resolve();
 }
 
@@ -18,7 +21,7 @@ module.exports = class TreasureModel extends Model {
      * @param {Treasure} treasure 
      * @returns 
      */
-    async add_treasure_chest_self(owner, treasure) {
+    async add_treasure_chest_self(treasure) {
         if(!treasure.chest) return treasure;
 
         chest_id = treasure.chest;
@@ -27,7 +30,6 @@ module.exports = class TreasureModel extends Model {
             chest_id: chest_id,
             chest_self: ds.self_link('chest', chest_id)
         }
-
         return treasure;
     }
 
@@ -39,9 +41,15 @@ module.exports = class TreasureModel extends Model {
      * @returns 
      */
     async get_treasures(owner, page_cursor) {
-        return super.get_objects(owner, page_cursor)
-            .then(treasures => treasures.map(treasure =>
-                this.add_treasure_chest_self(owner, treasure)))
+        return super.get_objects_by_owner(owner, page_cursor)
+            .then(response => Promise.all(response["objects"]
+                .map(treasure => this.add_treasure_chest_self(treasure))
+            )
+                .then(treasures => ({
+                    "treasures": treasures,
+                    "next": response["next"]
+                }))
+            )
     }
 
     /**
@@ -69,7 +77,13 @@ module.exports = class TreasureModel extends Model {
         return super.get_object(treasure_id)
             .then(treasure => {
                 if(treasure.owner == owner) return treasure;
-                return new error.TreasureNotFoundError();
+                return Promise.reject(new error.TreasureNotFoundError());
+            })
+            .catch(err => {
+                if(err.status == 404) {
+                    return Promise.reject(new error.TreasureNotFoundError());
+                }
+                return Promise.reject(err);
             })
     }
 
@@ -83,8 +97,8 @@ module.exports = class TreasureModel extends Model {
      */
     async get_treasure_with_self(owner, treasure_id) {
         return this.get_treasure(owner, treasure_id)
-            .then(treasure => ds.add_self(this.kind, treasure))
-                .add_treasure_chest_self(owner, treasure)
+            .then(treasure => this.add_treasure_chest_self(
+                ds.add_self(this.kind, treasure)))
     }
 
     /**
@@ -99,7 +113,7 @@ module.exports = class TreasureModel extends Model {
     async replace_treasure(owner, treasure_id, treasure) {
         treasure.owner = owner;
         return check_attributes(treasure)
-            .then(_ => this.modify_treasure(owner, treasure_id, treasure))
+            .then(_ => this.update_treasure(owner, treasure_id, treasure))
     }
 
     /**
@@ -110,13 +124,13 @@ module.exports = class TreasureModel extends Model {
      * @param {Chest} treasure 
      * @returns 
      */
-    async modify_treasure(owner, treasure_id, treasure) {
+    async update_treasure(owner, treasure_id, treasure) {
         treasure.owner = owner;
         return this.get_treasure(owner, treasure_id)
             .then(oldTreasure => {
                 Object.keys(treasure).forEach(key =>
                     oldTreasure[key] = treasure[key]);
-                super.update_object(treasure)
+                super.update_object(oldTreasure)
             })
     }
 
@@ -125,8 +139,11 @@ module.exports = class TreasureModel extends Model {
             .then(treasure => {
                 if(treasure.chest) {
                     ds.get_item('chest', treasure.chest)
-                        .then(chest => ds.save_item(chest.treasures
-                            .filter(held => held != treasure_id)))
+                        .then(chest => {
+                            chest.treasures = chest.treasures
+                                .filter(held => held != treasure_id);
+                            return ds.save_item(chest)
+                        })
                 }
 
                 return super.delete_object(treasure_id)
