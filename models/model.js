@@ -16,14 +16,14 @@ module.exports = class Model {
     async get_object(id) {
         return ds.get_item(this.kind, id)
             .then(object => {
-                if(object[0]) return ds.from_datastore(object[0])
+                if(object[0]) return object[0];
                 return Promise.reject(new error.ObjectNotFoundError())
             })
     }
 
     async get_object_with_self(id) {
         return this.get_object(id)
-            .then(object => ds.add_self(this.kind, object))
+            .then(object => ds.add_self(this.kind, ds.from_datastore(object)))
     }
 
     async get_objects(page_cursor) {

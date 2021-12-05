@@ -24,11 +24,11 @@ module.exports = class TreasureModel extends Model {
     async add_treasure_chest_self(treasure) {
         if(!treasure.chest) return treasure;
 
-        chest_id = treasure.chest;
+        let chest_id = treasure.chest;
 
         treasure.chest = {
-            chest_id: chest_id,
-            chest_self: ds.self_link('chest', chest_id)
+            id: chest_id,
+            self: ds.self_link('chest', chest_id)
         }
         return treasure;
     }
@@ -98,7 +98,7 @@ module.exports = class TreasureModel extends Model {
     async get_treasure_with_self(owner, treasure_id) {
         return this.get_treasure(owner, treasure_id)
             .then(treasure => this.add_treasure_chest_self(
-                ds.add_self(this.kind, treasure)))
+                ds.add_self(this.kind, ds.from_datastore(treasure))))
     }
 
     /**
@@ -138,8 +138,10 @@ module.exports = class TreasureModel extends Model {
         return this.get_treasure(owner, treasure_id)
             .then(treasure => {
                 if(treasure.chest) {
+                    // Had to get a bit hacky here to go around circular refs
                     ds.get_item('chest', treasure.chest)
                         .then(chest => {
+                            chest = chest[0]
                             chest.treasures = chest.treasures
                                 .filter(held => held != treasure_id);
                             return ds.save_item(chest)

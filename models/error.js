@@ -47,7 +47,7 @@ module.exports = {
     MissingAttributeError: class MissingAttributeError extends HttpError {
         constructor() {
             super(
-                401,
+                400,
                 "MissingAttributeError",
                 "Input is missing a required attribute"
             )
@@ -78,12 +78,39 @@ module.exports = {
             super("Page")
         }
     },
+    ChestOrTreasureNotFoundError: class ChestOrTreasureNotFoundError extends HttpError {
+        constructor() {
+            super(
+                404,
+                "ChestOrTreasureNotFoundError",
+                "Either chest or treasure not found"
+            );
+        }
+    },
+    ChestFullError: class ChestFullError extends HttpError {
+        constructor() {
+            super(
+                400,
+                "ChestFullError",
+                "Requested chest does not have room for requested treasure"
+            )
+        }
+    },
     TreasureNotInChestError: class TreasureNotInChestError extends HttpError {
         constructor() {
             super(
-                401,
+                400,
                 "TreasureNotInChestError",
                 "No treasure with the given treasure ID is in a chest with the given chest ID"
+            )
+        }
+    },
+    TreasureAlreadyInChestError: class TreasureAlreadyInChestError extends HttpError {
+        constructor() {
+            super(
+                400,
+                "TreasureAlreadyInChestError",
+                "The treasure with the given ID is already in a chest"
             )
         }
     }

@@ -23,9 +23,22 @@ module.exports = class ChestModel extends Model {
      * @returns 
      */
     async add_chest_treasure_details(owner, chest) {
-        chest.treasures = chest.treasures.map(treasure_id =>
-            treasureModel.get_treasure_with_self(owner, treasure_id))
-        return chest;
+        return Promise.all(chest.treasures.map(treasure_id =>
+            treasureModel.get_treasure_with_self(owner, treasure_id)))
+                .then(treasures => {
+                    chest.treasures = treasures;
+                    return chest;
+                })
+    }
+
+    async check_remaining_volume(owner, chest, treasure) {
+        return this.add_chest_treasure_details(owner, chest)
+            .then(chest => {
+                let occupied = chest.treasures
+                    .map(treasure => treasure.volume)
+                    .reduce((previous, current) => previous + current, 0)
+                return chest.volume >= occupied + treasure.volume;
+            })
     }
 
     /**
@@ -93,7 +106,7 @@ module.exports = class ChestModel extends Model {
     async get_chest_with_self(owner, chest_id) {
         return this.get_chest(owner, chest_id)
             .then(chest => this.add_chest_treasure_details(
-                owner, ds.add_self(this.kind, chest))
+                owner, ds.add_self(this.kind, ds.from_datastore(chest)))
             )
     }
 
@@ -141,13 +154,35 @@ module.exports = class ChestModel extends Model {
         return this.get_chest(owner, chest_id)
             .then(chest => treasureModel.get_treasure(owner, treasure_id)
                 .then(treasure => {
-                    chest.treasures.push(treasure_id);
-                    treasure.chest = chest_id;
-                    
-                    return ds.save_item(chest)
-                        .then(_ => ds.save_item(treasure))
+                    if(treasure.chest) {
+                        return Promise.reject(
+                            new error.TreasureAlreadyInChestError());
+                    }
+
+                    let treasures = chest.treasures;
+
+                    return this.check_remaining_volume(owner, chest, treasure)
+                        .then(fits => {
+                            if(fits) {
+                                treasures.push(treasure_id);
+                                chest.treasures = treasures;
+                                treasure.chest = chest_id;
+                                
+                                return ds.save_item(chest)
+                                    .then(_ => ds.save_item(treasure))
+                            } else {
+                                return Promise.reject(
+                                    new error.ChestFullError());
+                            }
+                        })
                 })
             )
+            .catch(err =>{
+                if(err.status == 404) {
+                    return Promise.reject(new error.ChestOrTreasureNotFoundError());
+                }
+                return Promise.reject(err);
+            })
     }
 
     /**
@@ -163,17 +198,25 @@ module.exports = class ChestModel extends Model {
             .then(chest => treasureModel.get_treasure(owner, treasure_id)
                 .then(treasure => {
                     let index = chest.treasures.indexOf(treasure_id);
-                    if(index < 0) return new error.TreasureNotInChestError();
+                    if(index < 0) {
+                        return Promise.reject(new error.TreasureNotInChestError());
+                    }
 
-                    chest.treasures = chest.treasures.splice(index, 1)
+                    chest.treasures.splice(index, 1);
 
                     treasureModel.update_treasure(
-                        owner, treasure.id, { chest: null }
+                        owner, treasure_id, { chest: null }
                     );
                     
                     return ds.save_item(chest);
                 })
             )
+            .catch(err =>{
+                if(err.status == 404) {
+                    return Promise.reject(new error.ChestOrTreasureNotFoundError());
+                }
+                return Promise.reject(err);
+            })
     }
 
     /**
