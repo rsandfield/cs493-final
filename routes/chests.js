@@ -5,6 +5,9 @@ const auth = require('../services/auth');
 const ChestModel = require('../models/chest');
 const chestModel = new ChestModel();
 
+const error = require('../models/error');
+router.use(error.acceptOnlyJson);
+
 /**
  * Get paginated chests, private to authorized owner or all public if no token
  */
@@ -27,6 +30,13 @@ router.post('/',
         .then(chest => res.status(201).json(chest))
         .catch(next)
 );
+
+/**
+ * Proper errors for unused methods
+ */
+router.put('/', error.methodNotAllowed);
+router.patch('/', error.methodNotAllowed);
+router.delete('/', error.methodNotAllowed);
 
 /**
  * Get chest
@@ -68,6 +78,24 @@ router.patch('/:chest_id',
 );
 
 /**
+ * Delete chest
+ */
+router.delete('/:chest_id',
+    auth.get_user,
+    auth.check_for_user,
+    (req, res, next) => chestModel.delete_chest(
+        auth.get_user_id(req), req.params.chest_id
+    )
+        .then(_ => res.status(204).end())
+        .catch(next)
+);
+
+/**
+ * Proper errors for unused methods
+ */
+router.post('/:chest_id', error.methodNotAllowed);
+
+/**
  * Add treasure to chest
  */
 router.put('/:chest_id/treasures/:treasure_id',
@@ -94,16 +122,10 @@ router.delete('/:chest_id/treasures/:treasure_id',
 )
 
 /**
- * Delete chest
+ * Proper errors for unused methods
  */
-router.delete('/:chest_id',
-    auth.get_user,
-    auth.check_for_user,
-    (req, res, next) => chestModel.delete_chest(
-        auth.get_user_id(req), req.params.chest_id
-    )
-        .then(_ => res.status(204).end())
-        .catch(next)
-);
+router.post('/:chest_id/treasures/:treasure_id', error.methodNotAllowed);
+router.get('/:chest_id/treasures/:treasure_id', error.methodNotAllowed);
+router.patch('/:chest_id/treasures/:treasure_id', error.methodNotAllowed);
 
 module.exports = router;

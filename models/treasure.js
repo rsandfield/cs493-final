@@ -80,7 +80,7 @@ module.exports = class TreasureModel extends Model {
                 return Promise.reject(new error.TreasureNotFoundError());
             })
             .catch(err => {
-                if(err.status == 404) {
+                if(err.status == 403) {
                     return Promise.reject(new error.TreasureNotFoundError());
                 }
                 return Promise.reject(err);

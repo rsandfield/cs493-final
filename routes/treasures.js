@@ -5,6 +5,9 @@ const auth = require('../services/auth');
 const TreasureModel = require('../models/treasure')
 const treasureModel = new TreasureModel();
 
+const error = require('../models/error');
+router.use(error.acceptOnlyJson);
+
 /**
  * Get paginated treasures, private to authorized owner or all public if no token
  */
@@ -29,6 +32,13 @@ router.post('/',
         .then(treasure => res.status(201).json(treasure))
         .catch(next)
 );
+
+/**
+ * Proper errors for unused methods
+ */
+router.put('/', error.methodNotAllowed);
+router.patch('/', error.methodNotAllowed);
+router.delete('/', error.methodNotAllowed);
 
 /**
 * Get treasure
@@ -73,5 +83,11 @@ router.delete('/:treasure_id',
         .then(_ => res.status(204).end())
         .catch(next)
 );
+
+
+/**
+ * Proper errors for unused methods
+ */
+ router.post('/:treasure_id', error.methodNotAllowed);
 
 module.exports = router;

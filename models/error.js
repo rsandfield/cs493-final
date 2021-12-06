@@ -13,7 +13,7 @@ class HttpError extends Error {
 class NotFoundError extends HttpError {
     constructor(kind) {
         super(
-            404,
+            403,
             kind + "NotFoundError",
             kind + " not found"
         );
@@ -21,6 +21,16 @@ class NotFoundError extends HttpError {
 }
 
 module.exports = {
+    acceptOnlyJson: function(req, res, next) {
+        if(req.accepts('json')) {
+            next();
+        } else {
+            next(new module.exports.NotAcceptableError());
+        }
+    },
+    methodNotAllowed: function(req, res, next) {
+        next(new module.exports.MethodNotAllowedError());
+    },
     handleErrors: function(err, req, res, next) {
         console.error(err)
         let status = err.status || 500;
@@ -38,7 +48,7 @@ module.exports = {
     InvalidTokenError: class InvalidTokenError extends HttpError {
         constructor() {
             super(
-                403,
+                401,
                 "InvalidTokenError",
                 "A valid token is required to complete that action"
             )
@@ -81,7 +91,7 @@ module.exports = {
     ChestOrTreasureNotFoundError: class ChestOrTreasureNotFoundError extends HttpError {
         constructor() {
             super(
-                404,
+                403,
                 "ChestOrTreasureNotFoundError",
                 "Either chest or treasure not found"
             );
@@ -111,6 +121,24 @@ module.exports = {
                 400,
                 "TreasureAlreadyInChestError",
                 "The treasure with the given ID is already in a chest"
+            )
+        }
+    },
+    MethodNotAllowedError: class MethodNotAllowedError extends HttpError {
+        constructor() {
+            super(
+                405,
+                "MethodNotAllowedError",
+                "That method is not allowed on this route"
+            )
+        }
+    },
+    NotAcceptableError: class NotAcceptableError extends HttpError {
+        constructor() {
+            super(
+                406,
+                "NotAcceptableError",
+                "UNACCEPTABLE"
             )
         }
     }

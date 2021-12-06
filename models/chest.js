@@ -88,7 +88,7 @@ module.exports = class ChestModel extends Model {
                 return Promise.reject(new error.ChestNotFoundError());
             })
             .catch(err => {
-                if(err.status == 404) {
+                if(err.status == 403) {
                     return Promise.reject(new error.ChestNotFoundError());
                 }
                 return Promise.reject(err);
@@ -178,7 +178,7 @@ module.exports = class ChestModel extends Model {
                 })
             )
             .catch(err =>{
-                if(err.status == 404) {
+                if(err.status == 403) {
                     return Promise.reject(new error.ChestOrTreasureNotFoundError());
                 }
                 return Promise.reject(err);
@@ -212,7 +212,7 @@ module.exports = class ChestModel extends Model {
                 })
             )
             .catch(err =>{
-                if(err.status == 404) {
+                if(err.status == 403) {
                     return Promise.reject(new error.ChestOrTreasureNotFoundError());
                 }
                 return Promise.reject(err);

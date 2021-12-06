@@ -15,10 +15,11 @@ module.exports = class UserModel extends Model {
 
     async register_user(user_id, username) {
         let safe_id = parseInt(user_id.substr(3), 10)  // Too long for Datastore
+        console.log(username, safe_id)
         
         return super.get_object(safe_id)
             .catch(err => {
-                if(err.status == 404) {
+                if(err.status == 403) {
                     return ds.datastore.save({
                         "key": ds.datastore.key([this.kind, safe_id]),
                         "data": {
